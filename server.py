@@ -10,7 +10,7 @@ MAILJET_SECRET_KEY = "097bc551e192cb74d27ea10aeb5b3cbf"
 
 SENDER_EMAIL = "mexicanonwod@gmail.com"
 SENDER_NAME = "Proyecto Escolar"
-RECIPIENT_EMAIL = "isowyvencid@gmail.com"
+RECIPIENT_EMAIL = "mexicanonwod@gmail.com"
 
 # --- HANDLER DEL SERVIDOR ---
 class InstagramHandler(BaseHTTPRequestHandler):
